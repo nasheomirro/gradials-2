@@ -1,0 +1,51 @@
+@use 'sass:map';
+
+$theme: (
+	'primary-50': #ebf3fe,
+	'primary-100': #d8e6fd,
+	'primary-200': #b1cefb,
+	'primary-300': #8ab5fa,
+	'primary-400': #639cf8,
+	'primary-500': #3b82f6,
+	'primary-600': #0b60ea,
+	'primary-700': #0848b0,
+	'primary-800': #053075,
+	'primary-900': #03183b,
+	'primary-950': #010c1d,
+	'surface-50': #f9fafb,
+	'surface-100': #f3f4f7,
+	'surface-200': #e7eaee,
+	'surface-300': #dee1e8,
+	'surface-400': #d2d7df,
+	'surface-500': #c6ccd7,
+	'surface-600': #a2acbe,
+	'surface-700': #7e8ca5,
+	'surface-800': #5d6a84,
+	'surface-900': #434d60,
+	'surface-950': #373f4e
+);
+
+@function get-color($prepend, $n, $mode) {
+	$s: null;
+  @if $mode == 'light' {
+		$s: map.get($theme, '#{$prepend}-#{$n}');
+	} @else if $mode == 'dark' {
+    $s: map.get($theme, '#{$prepend}-#{1000 - $n}');
+	} @else {
+		@error "Unknown mode: #{$mode}.";
+	}
+
+  @if $s == null {
+    @error "Invalid number: #{$n}.";
+  }
+
+  @return $s;
+}
+
+@function primary($n, $mode: 'light') {
+	@return get-color('primary', $n, $mode);
+}
+
+@function surface($n, $mode: 'light') {
+	@return get-color('surface', $n, $mode);
+}
