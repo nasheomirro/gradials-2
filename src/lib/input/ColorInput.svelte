@@ -14,8 +14,6 @@
 	const update = (newState: string) => {
 		state = newState;
 	};
-
-	// on edit stop listening to color value changes
 	$: update(color.value);
 
 	const finalizeEdit = () => {
@@ -30,7 +28,6 @@
 		}
 
 		const final = colord(state).toHex();
-		state = final;
 
 		dispatch('submit', final);
 	};

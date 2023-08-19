@@ -13,8 +13,6 @@
 	const update = (newState: number) => {
 		state = newState;
 	};
-
-	// on edit stop listening to color value changes
 	$: update(color.stop);
 
 	const finalizeEdit = () => {
@@ -25,6 +23,6 @@
 </script>
 
 <label>
-	<span>value</span>
+	<span>stop</span>
 	<input bind:value={state} type="number" on:focus on:change={finalizeEdit} />
 </label>
