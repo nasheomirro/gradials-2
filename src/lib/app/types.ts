@@ -1,5 +1,7 @@
+import type { AnyColor } from "colord";
+
 export type Color = {
-	value: string;
+  value: AnyColor,
 	stop: number;
 };
 

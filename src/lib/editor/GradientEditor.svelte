@@ -6,6 +6,8 @@
 	import StopInput from '$lib/input/StopInput.svelte';
 	import RgbaEditor from './RGBAEditor.svelte';
 	import ControlledInput from '$lib/input/ControlledInput.svelte';
+	import HsvEditor from './HSVEditor.svelte';
+	import type { AnyColor } from 'colord';
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
@@ -14,7 +16,7 @@
 	export let gradient: Gradient;
 	let current = 0;
 
-	const handleColorValue = (i: number) => (e: CustomEvent<string>) => {
+	const handleColorValue = (i: number) => (e: CustomEvent<AnyColor>) => {
 		dispatch(
 			'change',
 			produce(gradient, (draft) => {
@@ -61,6 +63,7 @@
 			>Y</ControlledInput
 		>
 	</div>
+
 	<!-- colors -->
 	<div>
 		{#each gradient.colors as color, i}
@@ -68,6 +71,10 @@
 			<StopInput {color} on:focus={() => (current = i)} on:submit={handleColorStop(i)} />
 		{/each}
 	</div>
+
 	<!-- current color -->
-	<RgbaEditor color={gradient.colors[current]} on:change={handleColorValue(current)} />
+	<div>
+		<RgbaEditor color={gradient.colors[current]} on:change={handleColorValue(current)} />
+		<HsvEditor color={gradient.colors[current]} on:change={handleColorValue(current)} />
+	</div>
 </div>

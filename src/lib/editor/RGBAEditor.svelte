@@ -2,10 +2,10 @@
 	import type { Color } from '$lib/app/types';
 	import ControlledInput from '$lib/input/ControlledInput.svelte';
 	import { createEventDispatcher, type ComponentEvents } from 'svelte';
-	import { colord } from 'colord';
+	import { colord, type AnyColor } from 'colord';
 
 	const dispatch = createEventDispatcher<{
-		change: string;
+		change: AnyColor;
 	}>();
 
 	export let color: Color;
@@ -19,7 +19,7 @@
 			} else {
 				newColor.rgba[type] = e.detail;
 			}
-			dispatch('change', newColor.toHex());
+			dispatch('change', newColor.toRgb());
 		};
 </script>
 

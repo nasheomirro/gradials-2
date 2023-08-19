@@ -7,11 +7,11 @@ const createDefaultGradient = (): Gradient => {
 	return {
 		colors: [
 			{
-				value: '#aaffaa',
+				value: '#00ffaa',
 				stop: 0
 			},
 			{
-				value: '#00000000',
+        value: '#0000',
 				stop: 50
 			}
 		],

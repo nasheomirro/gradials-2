@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { colord } from 'colord';
+	import {  colord, type AnyColor } from 'colord';
 	import type { Color } from '$lib/app/types';
 	import { createEventDispatcher } from 'svelte';
 
@@ -8,17 +8,15 @@
 	}>();
 
 	export let color: Color;
-	let state = color.value;
+	let state: string;
 
-	// this is needed, it hides the dependency for color value.
-	const update = (newState: string) => {
-		state = newState;
+	// this is needed, it hides the connection betwen state and color value.
+	const update = (newState: AnyColor) => {
+		state = colord(newState).toHex();
 	};
 	$: update(color.value);
 
 	const finalizeEdit = () => {
-		if (state === color.value) return;
-
 		// prepend a '#' if the value looks like a '#-less' value
 		if (
 			/^[\da-fA-F]/.test(state) &&
@@ -26,10 +24,7 @@
 		) {
 			state = '#' + state;
 		}
-
-		const final = colord(state).toHex();
-
-		dispatch('submit', final);
+		dispatch('submit', colord(state).toHex());
 	};
 </script>
 
