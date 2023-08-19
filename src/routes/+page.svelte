@@ -1,14 +1,17 @@
 <script lang="ts">
-	import { background, history } from '$lib/app';
+	import { backgrounds } from '$lib/app/store';
 	import BackgroundEditor from '$lib/editor/BackgroundEditor.svelte';
 	import '$lib/scss/app.scss';
 
-  $: console.log($background);
+	$: background = $backgrounds.backgrounds[$backgrounds.current];
 </script>
 
-<button on:click={() => history.undoCurrentBackground}>undo</button>
-<BackgroundEditor bind:background={$background} />
+<!-- <button on:click={() => history.undoCurrentBackground}>undo</button> -->
+
+{#if background}
+	<BackgroundEditor {background} />
+{/if}
 
 <pre>
-  {JSON.stringify($background, null, 2)}
+  {JSON.stringify(background, null, 2)}
 </pre>
