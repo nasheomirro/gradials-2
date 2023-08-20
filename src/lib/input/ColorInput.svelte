@@ -1,10 +1,10 @@
 <script lang="ts">
-	import {  colord, type AnyColor } from 'colord';
+	import { colord, type AnyColor, type RgbaColor } from 'colord';
 	import type { Color } from '$lib/app/types';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher<{
-		submit: string;
+		submit: RgbaColor;
 	}>();
 
 	export let color: Color;
@@ -14,7 +14,7 @@
 	const update = (newState: AnyColor) => {
 		state = colord(newState).toHex();
 	};
-	$: update(color.value);
+	$: update(color.rgb);
 
 	const finalizeEdit = () => {
 		// prepend a '#' if the value looks like a '#-less' value
@@ -24,7 +24,7 @@
 		) {
 			state = '#' + state;
 		}
-		dispatch('submit', colord(state).toHex());
+		dispatch('submit', colord(state).toRgb());
 	};
 </script>
 

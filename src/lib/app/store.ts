@@ -2,16 +2,19 @@ import type { Background, Gradient } from './types';
 import { writable } from 'svelte/store';
 import { nanoid } from 'nanoid';
 import { produce, type Draft } from 'immer';
+import { colord } from 'colord';
 
 const createDefaultGradient = (): Gradient => {
 	return {
 		colors: [
 			{
-				value: '#00ffaa',
+        rgb: colord('#00ffaa').toRgb(),
+        hsv: colord('#00ffaa').toHsv(),
 				stop: 0
 			},
 			{
-        value: '#0000',
+        rgb: colord('#0000').toRgb(),
+        hsv: colord('#0000').toHsv(),
 				stop: 50
 			}
 		],

@@ -1,7 +1,8 @@
-import type { AnyColor } from "colord";
+import type { HsvaColor, RgbaColor } from "colord";
 
 export type Color = {
-  value: AnyColor,
+  rgb: RgbaColor,
+  hsv: HsvaColor,
 	stop: number;
 };
 

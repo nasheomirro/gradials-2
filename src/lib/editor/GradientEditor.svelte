@@ -7,7 +7,7 @@
 	import RgbaEditor from './RGBAEditor.svelte';
 	import ControlledInput from '$lib/input/ControlledInput.svelte';
 	import HsvEditor from './HSVEditor.svelte';
-	import type { AnyColor } from 'colord';
+	import { colord, type HsvaColor, type RgbaColor } from 'colord';
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
@@ -16,11 +16,19 @@
 	export let gradient: Gradient;
 	let current = 0;
 
-	const handleColorValue = (i: number) => (e: CustomEvent<AnyColor>) => {
+	const isRgb = (color: any): color is RgbaColor => typeof color.r !== 'undefined';
+	const handleColorValue = (i: number) => (e: CustomEvent<RgbaColor | HsvaColor>) => {
 		dispatch(
 			'change',
 			produce(gradient, (draft) => {
-				draft.colors[i].value = e.detail;
+				const color = e.detail;
+				if (isRgb(color)) {
+					draft.colors[i].rgb = color;
+					draft.colors[i].hsv = colord(color).toHsv();
+				} else {
+					draft.colors[i].hsv = color;
+					draft.colors[i].rgb = colord(color).toRgb();
+				}
 			})
 		);
 	};

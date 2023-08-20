@@ -3,21 +3,20 @@
 	import { spring } from 'svelte/motion';
 
 	const dispatch = createEventDispatcher<{
+		/** returns a number from 0 - 1, the percentage of the point of contact relative to the width of the picker */
 		pick: number;
 	}>();
 
 	export let value: number;
 	export let max: number;
+	export let style: string;
 
-	let state = spring(0, { stiffness: 0.3, damping: 0.8 });
-
-	const update = (newState: number) => {
-		state.update(() => Math.max(0, Math.min(max, (newState / max) * 100)));
-	}; 
-	$: update(value);
-
+	let state = spring(0, { stiffness: 0.3, damping: 0.7 });
 	let container: HTMLDivElement;
 	let isDragging = false;
+
+	$: fixedValue = Math.max(0, Math.min(100, (value / max) * 100));
+	$: state.set(fixedValue);
 
 	const pick = (percentage: number) => {
 		let width = container.offsetWidth;
@@ -27,11 +26,16 @@
 		dispatch('pick', fixedPercentage);
 	};
 
-	const handleMouseup = () => (isDragging = false);
+	const handleMouseup = () => {
+		isDragging = false;
+	};
 	const handleMousedown = (e: MouseEvent) => {
 		isDragging = true;
+		// prevent selecting text
+		e.preventDefault();
 		pick(e.clientX);
 	};
+
 	const handleMousemove = (e: MouseEvent) => {
 		if (!isDragging) return;
 		pick(e.clientX);
@@ -48,17 +52,18 @@
 </script>
 
 <!-- TODO: look up accessibility for sliders -->
-<div bind:this={container} class="picker" role="none" on:mousedown={handleMousedown}>
-	<div class="picker-thumb" style={`left: ${$state}%;`} />
+<div class="picker-container">
+	<div bind:this={container} class="picker" {style} role="none" on:mousedown={handleMousedown}>
+		<div class="picker-thumb" style={`left: ${$state}%;`} />
+	</div>
 </div>
 
 <style>
 	.picker-thumb {
 		left: 0;
-		width: 1rem;
+		width: 5px;
 		height: 100%;
 		position: absolute;
-		background: white;
 		border: 2px solid black;
 		top: 50%;
 		transform: translate(-50%, -50%);
@@ -66,23 +71,18 @@
 
 	.picker {
 		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.picker-container {
+		background-image: linear-gradient(45deg, #ccca 25%, transparent 25%),
+			linear-gradient(-45deg, #ccca 25%, transparent 25%),
+			linear-gradient(45deg, transparent 75%, #ccca 75%),
+			linear-gradient(-45deg, transparent 75%, #ccca 75%);
+		background-size: 20px 20px;
+		background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 		width: 16rem;
 		height: 1.2rem;
-		background: linear-gradient(
-			to right,
-			hsl(0deg 100% 50%),
-			hsl(30deg 100% 50%),
-			hsl(60deg 100% 50%),
-			hsl(90deg 100% 50%),
-			hsl(120deg 100% 50%),
-			hsl(150deg 100% 50%),
-			hsl(180deg 100% 50%),
-			hsl(210deg 100% 50%),
-			hsl(240deg 100% 50%),
-			hsl(270deg 100% 50%),
-			hsl(300deg 100% 50%),
-			hsl(330deg 100% 50%),
-			hsl(360deg 100% 50%)
-		);
 	}
 </style>
