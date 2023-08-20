@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Color } from '$lib/app/types';
+	import { bound } from '$lib/utils';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher<{
@@ -17,7 +18,7 @@
 
 	const finalizeEdit = () => {
 		if (state === color.stop) return;
-		state = Math.max(0, Math.min(100, state));
+		state = bound(0, state, 100);
 		dispatch('submit', state);
 	};
 </script>

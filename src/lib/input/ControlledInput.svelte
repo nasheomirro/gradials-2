@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { bound } from '$lib/utils';
 	import { createEventDispatcher } from 'svelte';
 	import type { FormEventHandler } from 'svelte/elements';
 
@@ -6,7 +7,7 @@
 		input: number;
 	}>();
 
-  export let numType: 'int' | 'float' = 'int';
+	export let numType: 'int' | 'float' = 'int';
 	export let value: number;
 	export let max: number;
 	let state: number = value;
@@ -21,7 +22,7 @@
 		const value = (e.target as HTMLInputElement).value;
 		if (value.length === 0) return;
 
-		state = Math.max(0, Math.min(max, numType === 'float' ? Number(value) : parseInt(value)));
+		state = bound(0, numType === 'float' ? Number(value) : parseInt(value), max);
 		dispatch('input', state);
 	};
 </script>

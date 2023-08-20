@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { bound } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 
@@ -15,14 +16,14 @@
 	let container: HTMLDivElement;
 	let isDragging = false;
 
-	$: fixedValue = Math.max(0, Math.min(100, (value / max) * 100));
+	$: fixedValue = bound(0, (value / max) * 100, 100);
 	$: state.set(fixedValue);
 
 	const pick = (percentage: number) => {
 		let width = container.offsetWidth;
 		const relativeX = percentage - container.getBoundingClientRect().left;
 		const rawPercentage = relativeX / width;
-		const fixedPercentage = Math.max(0, Math.min(1, rawPercentage));
+		const fixedPercentage = bound(0, rawPercentage, 1);
 		dispatch('pick', fixedPercentage);
 	};
 
