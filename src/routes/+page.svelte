@@ -6,7 +6,14 @@
 	$: background = $backgrounds.backgrounds[$backgrounds.current];
 </script>
 
-<!-- <button on:click={() => history.undoCurrentBackground}>undo</button> -->
+<div>
+  <button on:click={() => backgrounds.createBackground()}>new background</button>
+	{#each $backgrounds.backgrounds as background, i (background.id)}
+		<button on:click={() => backgrounds.updateCurrent(i)}>
+			change current to {background.name}
+		</button>
+	{/each}
+</div>
 
 {#if background}
 	<BackgroundEditor {background} />

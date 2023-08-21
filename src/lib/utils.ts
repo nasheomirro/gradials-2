@@ -1,5 +1,6 @@
-import type { HsvaColor, RgbaColor } from 'colord';
-import type { Color } from './app/types';
+import { colord, type RgbaColor } from 'colord';
+import type { Background, Color, Gradient } from './app/types';
+import { nanoid } from 'nanoid';
 
 export const bound = (min: number, n: number, max: number) => {
 	return n > max ? max : n < min ? min : n;
@@ -9,6 +10,38 @@ export const isRgb = (color: any): color is RgbaColor => typeof color.r !== 'und
 
 export const toFixed = (n: number, p: number = 2) => {
 	return parseFloat(n.toFixed(p));
+};
+
+export const createDefaultGradient = (): Gradient => {
+	return {
+		colors: [
+			{
+				rgb: colord('#00ffaa').toRgb(),
+				hsv: colord('#00ffaa').toHsv(),
+				stop: 0,
+				id: nanoid(6)
+			},
+			{
+				rgb: colord('#0000').toRgb(),
+				hsv: colord('#0000').toHsv(),
+				stop: 50,
+				id: nanoid(6)
+			}
+		],
+		id: nanoid(6),
+		shape: 'ellipse',
+		x: 0,
+		y: 0
+	};
+};
+
+export const createDefaultBackground = (): Background => {
+	return {
+		name: 'New Background',
+		gradients: [createDefaultGradient()],
+		openedAt: new Date(),
+		id: nanoid(6)
+	};
 };
 
 /**

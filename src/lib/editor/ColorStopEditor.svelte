@@ -15,31 +15,18 @@
 	}>();
 
 	export let colors: Color[];
-	export let current: string;
+	export let currentColor: Color;
 
-	const getState = () => {
-		return colors.reduce((obj, next) => ({ ...obj, [next.id]: next.stop }), {});
-	};
-
-	const state = spring<{ [key: string]: number }>(getState(), { stiffness: 0.3, damping: 0.7 });
+	const state = spring(currentColor.stop, { stiffness: 0.3, damping: 0.7 });
 	let container: HTMLDivElement;
 	let isDragging: boolean;
+	let prevColorId = currentColor.id;
 
-	const update = (colors: Color[]) => {
-		Object.keys($state).length < colors.length
-			? state.set(getState(), { hard: true })
-			: state.set(getState());
+	const update = (color: Color) => {
+		state.set(color.stop, { hard: prevColorId !== color.id });
+		prevColorId = color.id;
 	};
-
-	/**
-	 * since springs can't interpolate properties that weren't intially defined,
-	 * we'll have to hard-set the state when we get a new color or delete an old color.
-	 * This could look glitch-y if we want to simultaneously interpolate and
-	 * hard-set values but that seems unlikely to happen
-	 */
-	$: update(colors);
-
-	$: console.log($state);
+	$: update(currentColor);
 
 	const getStopValue = (position: number) => {
 		const width = container.offsetWidth;
@@ -49,13 +36,13 @@
 	};
 
 	const pick = (position: number) => {
-		const color = colors.find((color) => color.id === current);
-		if (color) dispatch('change', { ...color, stop: getStopValue(position) });
+		dispatch('change', { ...currentColor, stop: getStopValue(position) });
 	};
 
 	const handleStopDrag = (e: MouseEvent) => {
 		if (isDragging) {
-			e.stopPropagation();
+			// prevent triggering createColor
+      e.stopPropagation();
 			isDragging = false;
 		}
 	};
@@ -112,7 +99,7 @@
 >
 	{#each colors as color (color.id)}
 		<div
-			style={`left: ${$state[color.id]}%;`}
+			style={`left: ${color.id === currentColor.id ? $state : color.stop}%;`}
 			class="picker-thumb"
 			role="none"
 			on:mousedown={handleStartDrag(color.id)}

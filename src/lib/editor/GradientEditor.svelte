@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { current, produce } from 'immer';
-	import { createEventDispatcher } from 'svelte';
+	import { produce } from 'immer';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import type { Color, Gradient } from '$lib/app/types';
 	import ColorInput from '$lib/input/ColorInput.svelte';
 	import StopInput from '$lib/input/StopInput.svelte';
@@ -13,11 +13,12 @@
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
+		deleteself: string;
 	}>();
 
 	export let gradient: Gradient;
 	let currentId: string = gradient.colors[0]?.id;
-	$: currentColor = gradient.colors.find((color) => color.id === currentId) as Color;
+	$: currentColor = gradient.colors.find((color) => color.id === currentId);
 
 	const handleUpdateColorValue = (id: string) => (e: CustomEvent<RgbaColor | HsvaColor>) => {
 		dispatch(
@@ -84,14 +85,13 @@
 
 	const deleteColor = (id: string) => {
 		if (gradient.colors.length > 2) {
-      if (currentId === id) {
-        let i = gradient.colors.findIndex((color) => color.id === currentId);
-        if (i !== -1) {
-          i = i >= gradient.colors.length - 1 ? i - 1 : i + 1;
-          currentId = gradient.colors[i].id;
-        }
-      }
-
+			if (currentId === id) {
+				let i = gradient.colors.findIndex((color) => color.id === currentId);
+				if (i !== -1) {
+					i = i >= gradient.colors.length - 1 ? i - 1 : i + 1;
+					currentId = gradient.colors[i].id;
+				}
+			}
 			dispatch(
 				'change',
 				produce(gradient, (draft) => {
@@ -101,63 +101,73 @@
 		}
 	};
 
-  $: console.log(gradient.colors);
-
+	onMount(() => {
+		const listener = (e: KeyboardEvent) => {
+			if (e.key === 'Backspace' || e.key === 'Delete') {
+				deleteColor(currentId);
+			}
+		};
+		window.addEventListener('keydown', listener);
+		return () => window.removeEventListener('keydown', listener);
+	});
 </script>
 
 <div>
-	<ColorStopEditor
-		current={currentId}
-		colors={gradient.colors}
-		on:change={handleUpdateColor}
-		on:create={handleCreateColor}
-		on:focus={(e) => (currentId = e.detail)}
-	/>
-	<!-- shape and position -->
-	<div>
-		<button
-			on:click={() =>
-				dispatch(
-					'change',
-					produce(gradient, (draft) => {
-						draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
-					})
-				)}>change shape</button
-		>
-		<ControlledInput
-			numType="float"
-			on:input={handleUpdatePosition('x')}
-			value={gradient.x}
-			max={100}>X</ControlledInput
-		>
-		<ControlledInput
-			numType="float"
-			on:input={handleUpdatePosition('y')}
-			value={gradient.y}
-			max={100}>Y</ControlledInput
-		>
-	</div>
+	<div><button on:click={() => dispatch('deleteself', gradient.id)}>delete</button></div>
+	{#if currentColor}
+		<ColorStopEditor
+			{currentColor}
+			colors={gradient.colors}
+			on:change={handleUpdateColor}
+			on:create={handleCreateColor}
+			on:focus={(e) => (currentId = e.detail)}
+		/>
+		<!-- shape and position -->
+		<div>
+			<button
+				on:click={() =>
+					dispatch(
+						'change',
+						produce(gradient, (draft) => {
+							draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
+						})
+					)}>change shape</button
+			>
+			<ControlledInput
+				numType="float"
+				on:input={handleUpdatePosition('x')}
+				value={gradient.x}
+				max={100}>X</ControlledInput
+			>
+			<ControlledInput
+				numType="float"
+				on:input={handleUpdatePosition('y')}
+				value={gradient.y}
+				max={100}>Y</ControlledInput
+			>
+		</div>
 
-	<!-- colors -->
-	<div>
-		{#each gradient.colors as color (color.id)}
-			<ColorInput
-				{color}
-				on:focus={() => (currentId = color.id)}
-				on:submit={handleUpdateColorValue(color.id)}
-			/>
-			<StopInput
-				{color}
-				on:focus={() => (currentId = color.id)}
-				on:submit={handleUpdateColorStop(color.id)}
-			/>
-      <button on:click={() => deleteColor(color.id)}>delete</button>
-		{/each}
-	</div>
+		<!-- colors -->
+		<div>
+			{#each gradient.colors as color (color.id)}
+				<ColorInput
+					{color}
+					on:focus={() => (currentId = color.id)}
+					on:submit={handleUpdateColorValue(color.id)}
+				/>
+				<StopInput
+					{color}
+					on:focus={() => (currentId = color.id)}
+					on:submit={handleUpdateColorStop(color.id)}
+				/>
+				<button on:click={() => deleteColor(color.id)}>delete</button>
+			{/each}
+		</div>
 
-	<!-- current color -->
-	<div>
-		<RgbaEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
-		<HsvEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
-	</div>
+		<!-- current color -->
+		<div>
+			<RgbaEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
+			<HsvEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
+		</div>
+	{/if}
 </div>

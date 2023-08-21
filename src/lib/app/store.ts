@@ -3,38 +3,7 @@ import { writable } from 'svelte/store';
 import { nanoid } from 'nanoid';
 import { produce, type Draft } from 'immer';
 import { colord } from 'colord';
-
-const createDefaultGradient = (): Gradient => {
-	return {
-		colors: [
-			{
-				rgb: colord('#00ffaa').toRgb(),
-				hsv: colord('#00ffaa').toHsv(),
-				stop: 0,
-				id: nanoid(6)
-			},
-			{
-				rgb: colord('#0000').toRgb(),
-				hsv: colord('#0000').toHsv(),
-				stop: 50,
-				id: nanoid(6)
-			}
-		],
-		id: nanoid(6),
-		shape: 'ellipse',
-		x: 0,
-		y: 0
-	};
-};
-
-const createDefaultBackground = (): Background => {
-	return {
-		name: 'New Background',
-		gradients: [createDefaultGradient()],
-		openedAt: new Date(),
-		id: nanoid(6)
-	};
-};
+import { createDefaultBackground } from '$lib/utils';
 
 const createStore = () => {
 	const backgrounds = writable<{
@@ -61,7 +30,7 @@ const createStore = () => {
 				// switch current background if about to be deleted
 				const i = draft.backgrounds.findIndex((bg) => bg.id === id);
 				if (i !== -1 && i === draft.current) {
-					draft.current = i === draft.backgrounds.length - 1 ? i - 1 : i + 1;
+					draft.current = i === draft.backgrounds.length - 1 ? i - 1 : i;
 				}
 				draft.backgrounds = draft.backgrounds.filter((bg) => bg.id !== id);
 			})
@@ -79,11 +48,19 @@ const createStore = () => {
 		);
 	};
 
+	const updateCurrent = (i: number) => {
+		backgrounds.update((store) => ({
+			...store,
+			current: i
+		}));
+	};
+
 	return {
 		subscribe: backgrounds.subscribe,
 		createBackground,
 		deleteBackground,
-		updateBackground
+		updateBackground,
+    updateCurrent
 	};
 };
 

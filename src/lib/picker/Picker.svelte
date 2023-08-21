@@ -15,11 +15,12 @@
 	export let max: number;
 	export let style: string;
 
-	let state = spring(0, { stiffness: 0.3, damping: 0.7 });
+	$: fixedValue = bound(0, (value / max) * 100, 100);
+
+	let state = spring<number>(fixedValue, { stiffness: 0.3, damping: 0.7 });
 	let container: HTMLDivElement;
 	let isDragging = false;
 
-	$: fixedValue = bound(0, (value / max) * 100, 100);
 	$: state.set(fixedValue);
 
 	const pick = (position: number) => {
@@ -31,9 +32,9 @@
 	};
 
 	const handleMouseup = () => {
-    if (isDragging) {
-      isDragging = false;
-    }
+		if (isDragging) {
+			isDragging = false;
+		}
 	};
 	const handleMousedown = (e: MouseEvent) => {
 		isDragging = true;

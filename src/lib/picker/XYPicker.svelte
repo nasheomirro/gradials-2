@@ -18,14 +18,15 @@
 	export let invertY: boolean = true;
 	export let style: string;
 
-	let state = spring({ x: 0, y: 0 }, { stiffness: 0.3, damping: 0.7 });
-	let container: HTMLDivElement;
-	let isDragging = false;
-
 	$: fixedValue = {
 		x: bound(0, (xValue / xMax) * 100, 100),
 		y: bound(0, (yValue / yMax) * 100, 100)
 	};
+
+	let state = spring<{ x: number; y: number }>(fixedValue, { stiffness: 0.3, damping: 0.7 });
+	let container: HTMLDivElement;
+	let isDragging = false;
+  
 	$: state.set(fixedValue);
 
 	const pick = (xPosition: number, yPosition: number) => {
@@ -40,9 +41,9 @@
 	};
 
 	const handleMouseup = () => {
-    if (isDragging) {
-      isDragging = false;
-    }
+		if (isDragging) {
+			isDragging = false;
+		}
 	};
 
 	const handleMousedown = (e: MouseEvent) => {
