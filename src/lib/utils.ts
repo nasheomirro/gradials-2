@@ -76,3 +76,18 @@ export const getColorBetween = (stop: number, colors: Color[]): RgbaColor | unde
 		return { r, g, b, a: 1 };
 	}
 };
+
+export const getBackgroundViewString = (gradients: Gradient[]) => {
+	const bgString = gradients
+		.map((gradient) => {
+			let colorsString = gradient.colors
+				.map((color) => {
+					return colord(color.rgb).toRgbString() + ' ' + color.stop + '%';
+				})
+				.join(',');
+
+			return `radial-gradient(${gradient.shape} at ${gradient.x}% ${gradient.y}%, ${colorsString})`;
+		})
+		.join(',');
+	return 'background: ' + bgString + ';';
+};

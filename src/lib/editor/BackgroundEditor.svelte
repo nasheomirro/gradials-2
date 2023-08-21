@@ -2,6 +2,7 @@
 	import { backgrounds } from '$lib/app/store';
 	import type { Background } from '$lib/app/types';
 	import { createDefaultGradient } from '$lib/utils';
+	import BackgroundView from './BackgroundView.svelte';
 	import GradientEditor from './GradientEditor.svelte';
 
 	export let background: Background;
@@ -18,8 +19,9 @@
 				});
 			}}
 		/>
-    <button on:click={() => backgrounds.deleteBackground(background.id)}>delete self</button>
+		<button on:click={() => backgrounds.deleteBackground(background.id)}>delete self</button>
 	</label>
+
 	<ul>
 		{#each background.gradients as gradient (gradient.id)}
 			<GradientEditor
@@ -40,6 +42,7 @@
 			/>
 		{/each}
 	</ul>
+
 	<button
 		on:click={() => {
 			backgrounds.updateBackground(background.id, (draft) => {
@@ -47,4 +50,14 @@
 			});
 		}}>create new gradient</button
 	>
+
+	<BackgroundView gradients={background.gradients} on:pick={(e) => {
+    backgrounds.updateBackground(background.id, (draft) => {
+      let i = draft.gradients.findIndex((gradient) => gradient.id === e.detail.id);
+      if (i !== -1) {
+        draft.gradients[i].x = e.detail.x;
+        draft.gradients[i].y = e.detail.y;
+      }
+    })
+  }} />
 </div>

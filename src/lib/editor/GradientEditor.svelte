@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { produce } from 'immer';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import type { Color, Gradient } from '$lib/app/types';
 	import ColorInput from '$lib/input/ColorInput.svelte';
 	import StopInput from '$lib/input/StopInput.svelte';
@@ -100,16 +100,6 @@
 			);
 		}
 	};
-
-	onMount(() => {
-		const listener = (e: KeyboardEvent) => {
-			if (e.key === 'Backspace' || e.key === 'Delete') {
-				deleteColor(currentId);
-			}
-		};
-		window.addEventListener('keydown', listener);
-		return () => window.removeEventListener('keydown', listener);
-	});
 </script>
 
 <div>
