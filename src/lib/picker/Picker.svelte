@@ -4,7 +4,10 @@
 	import { spring } from 'svelte/motion';
 
 	const dispatch = createEventDispatcher<{
-		/** returns a number from 0 - 1, the percentage of the point of contact relative to the width of the picker */
+		/**
+		 * returns a number from 0 - 1, the percentage of the
+		 * point of contact relative to the width of the picker
+		 */
 		pick: number;
 	}>();
 
@@ -19,16 +22,18 @@
 	$: fixedValue = bound(0, (value / max) * 100, 100);
 	$: state.set(fixedValue);
 
-	const pick = (percentage: number) => {
+	const pick = (position: number) => {
 		let width = container.offsetWidth;
-		const relativeX = percentage - container.getBoundingClientRect().left;
+		const relativeX = position - container.getBoundingClientRect().left;
 		const rawPercentage = relativeX / width;
 		const fixedPercentage = bound(0, rawPercentage, 1);
 		dispatch('pick', fixedPercentage);
 	};
 
 	const handleMouseup = () => {
-		isDragging = false;
+    if (isDragging) {
+      isDragging = false;
+    }
 	};
 	const handleMousedown = (e: MouseEvent) => {
 		isDragging = true;

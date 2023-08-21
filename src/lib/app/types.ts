@@ -1,9 +1,10 @@
-import type { HsvaColor, RgbaColor } from "colord";
+import type { HsvaColor, RgbaColor } from 'colord';
 
 export type Color = {
-  rgb: RgbaColor,
-  hsv: HsvaColor,
+	rgb: RgbaColor;
+	hsv: HsvaColor;
 	stop: number;
+	id: string;
 };
 
 export type Gradient = {
@@ -15,13 +16,13 @@ export type Gradient = {
 };
 
 export type Background = {
-  name: string;
-  id: string;
-  openedAt: Date;
-  gradients: Gradient[];
-}
+	name: string;
+	id: string;
+	openedAt: Date;
+	gradients: Gradient[];
+};
 
 export type BackgroundHistory = {
-  depth: number;
-  states: Background[];
-}
+	depth: number;
+	states: Background[];
+};

@@ -8,14 +8,16 @@ const createDefaultGradient = (): Gradient => {
 	return {
 		colors: [
 			{
-        rgb: colord('#00ffaa').toRgb(),
-        hsv: colord('#00ffaa').toHsv(),
-				stop: 0
+				rgb: colord('#00ffaa').toRgb(),
+				hsv: colord('#00ffaa').toHsv(),
+				stop: 0,
+				id: nanoid(6)
 			},
 			{
-        rgb: colord('#0000').toRgb(),
-        hsv: colord('#0000').toHsv(),
-				stop: 50
+				rgb: colord('#0000').toRgb(),
+				hsv: colord('#0000').toHsv(),
+				stop: 50,
+				id: nanoid(6)
 			}
 		],
 		id: nanoid(6),
@@ -77,25 +79,11 @@ const createStore = () => {
 		);
 	};
 
-	const updateGradient = (
-		backgroundId: string,
-		gradientId: string,
-		updater: (draft: Draft<Gradient>) => void
-	) => {
-		updateBackground(backgroundId, (draft) => {
-			let i = draft.gradients.findIndex((gradient) => gradient.id === gradientId);
-			if (i !== -1) {
-				draft.gradients[i] = produce(draft.gradients[i], updater);
-			}
-		});
-	};
-
 	return {
 		subscribe: backgrounds.subscribe,
 		createBackground,
 		deleteBackground,
-		updateBackground,
-		updateGradient
+		updateBackground
 	};
 };
 

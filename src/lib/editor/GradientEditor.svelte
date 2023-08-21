@@ -1,48 +1,70 @@
 <script lang="ts">
-	import { produce } from 'immer';
+	import { current, produce } from 'immer';
 	import { createEventDispatcher } from 'svelte';
-	import type { Gradient } from '$lib/app/types';
+	import type { Color, Gradient } from '$lib/app/types';
 	import ColorInput from '$lib/input/ColorInput.svelte';
 	import StopInput from '$lib/input/StopInput.svelte';
 	import RgbaEditor from './RGBAEditor.svelte';
 	import ControlledInput from '$lib/input/ControlledInput.svelte';
 	import HsvEditor from './HSVEditor.svelte';
 	import { colord, type HsvaColor, type RgbaColor } from 'colord';
+	import ColorStopEditor from './ColorStopEditor.svelte';
+	import { isRgb } from '$lib/utils';
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
 	}>();
 
 	export let gradient: Gradient;
-	let current = 0;
+	let currentId: string = gradient.colors[0]?.id;
+	$: currentColor = gradient.colors.find((color) => color.id === currentId) as Color;
 
-	const isRgb = (color: any): color is RgbaColor => typeof color.r !== 'undefined';
-	const handleColorValue = (i: number) => (e: CustomEvent<RgbaColor | HsvaColor>) => {
+	const handleUpdateColorValue = (id: string) => (e: CustomEvent<RgbaColor | HsvaColor>) => {
 		dispatch(
 			'change',
 			produce(gradient, (draft) => {
-				const color = e.detail;
-				if (isRgb(color)) {
-					draft.colors[i].rgb = color;
-					draft.colors[i].hsv = colord(color).toHsv();
-				} else {
-					draft.colors[i].hsv = color;
-					draft.colors[i].rgb = colord(color).toRgb();
+				let i = draft.colors.findIndex((color) => color.id === id);
+				if (i !== -1) {
+					const color = e.detail;
+					if (isRgb(color)) {
+						draft.colors[i].rgb = color;
+						draft.colors[i].hsv = colord(color).toHsv();
+					} else {
+						draft.colors[i].hsv = color;
+						draft.colors[i].rgb = colord(color).toRgb();
+					}
 				}
 			})
 		);
 	};
 
-	const handleColorStop = (i: number) => (e: CustomEvent<number>) => {
+	const handleUpdateColorStop = (id: string) => (e: CustomEvent<number>) => {
 		dispatch(
 			'change',
 			produce(gradient, (draft) => {
-				draft.colors[i].stop = e.detail;
+				let i = draft.colors.findIndex((color) => color.id === id);
+				if (i !== -1) {
+					draft.colors[i].stop = e.detail;
+					draft.colors = [...draft.colors].sort((a, b) => a.stop - b.stop);
+				}
 			})
 		);
 	};
 
-	const handlePosition = (direction: 'x' | 'y') => (e: CustomEvent<number>) => {
+	const handleUpdateColor = (e: CustomEvent<Color>) => {
+		dispatch(
+			'change',
+			produce(gradient, (draft) => {
+				const i = draft.colors.findIndex((color) => color.id === e.detail.id);
+				if (i !== -1) {
+					draft.colors[i] = e.detail;
+					draft.colors = [...draft.colors].sort((a, b) => a.stop - b.stop);
+				}
+			})
+		);
+	};
+
+	const handleUpdatePosition = (direction: 'x' | 'y') => (e: CustomEvent<number>) => {
 		dispatch(
 			'change',
 			produce(gradient, (draft) => {
@@ -50,9 +72,47 @@
 			})
 		);
 	};
+
+	const handleCreateColor = (e: CustomEvent<Color>) => {
+		dispatch(
+			'change',
+			produce(gradient, (draft) => {
+				draft.colors = [...draft.colors, e.detail].sort((a, b) => a.stop - b.stop);
+			})
+		);
+	};
+
+	const deleteColor = (id: string) => {
+		if (gradient.colors.length > 2) {
+      if (currentId === id) {
+        let i = gradient.colors.findIndex((color) => color.id === currentId);
+        if (i !== -1) {
+          i = i >= gradient.colors.length - 1 ? i - 1 : i + 1;
+          currentId = gradient.colors[i].id;
+        }
+      }
+
+			dispatch(
+				'change',
+				produce(gradient, (draft) => {
+					draft.colors = draft.colors.filter((color) => color.id !== id);
+				})
+			);
+		}
+	};
+
+  $: console.log(gradient.colors);
+
 </script>
 
 <div>
+	<ColorStopEditor
+		current={currentId}
+		colors={gradient.colors}
+		on:change={handleUpdateColor}
+		on:create={handleCreateColor}
+		on:focus={(e) => (currentId = e.detail)}
+	/>
 	<!-- shape and position -->
 	<div>
 		<button
@@ -64,25 +124,40 @@
 					})
 				)}>change shape</button
 		>
-		<ControlledInput numType="float" on:input={handlePosition('x')} value={gradient.x} max={100}
-			>X</ControlledInput
+		<ControlledInput
+			numType="float"
+			on:input={handleUpdatePosition('x')}
+			value={gradient.x}
+			max={100}>X</ControlledInput
 		>
-		<ControlledInput numType="float" on:input={handlePosition('y')} value={gradient.y} max={100}
-			>Y</ControlledInput
+		<ControlledInput
+			numType="float"
+			on:input={handleUpdatePosition('y')}
+			value={gradient.y}
+			max={100}>Y</ControlledInput
 		>
 	</div>
 
 	<!-- colors -->
 	<div>
-		{#each gradient.colors as color, i}
-			<ColorInput {color} on:focus={() => (current = i)} on:submit={handleColorValue(i)} />
-			<StopInput {color} on:focus={() => (current = i)} on:submit={handleColorStop(i)} />
+		{#each gradient.colors as color (color.id)}
+			<ColorInput
+				{color}
+				on:focus={() => (currentId = color.id)}
+				on:submit={handleUpdateColorValue(color.id)}
+			/>
+			<StopInput
+				{color}
+				on:focus={() => (currentId = color.id)}
+				on:submit={handleUpdateColorStop(color.id)}
+			/>
+      <button on:click={() => deleteColor(color.id)}>delete</button>
 		{/each}
 	</div>
 
 	<!-- current color -->
 	<div>
-		<RgbaEditor color={gradient.colors[current]} on:change={handleColorValue(current)} />
-		<HsvEditor color={gradient.colors[current]} on:change={handleColorValue(current)} />
+		<RgbaEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
+		<HsvEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
 	</div>
 </div>

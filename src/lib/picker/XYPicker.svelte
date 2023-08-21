@@ -28,22 +28,21 @@
 	};
 	$: state.set(fixedValue);
 
-	const pick = (xPercentage: number, yPercentage: number) => {
+	const pick = (xPosition: number, yPosition: number) => {
 		const width = container.offsetWidth;
 		const height = container.offsetHeight;
-		const relativeX = xPercentage - container.getBoundingClientRect().left;
-		const relativeY = Math.abs(
-			yPercentage -
-				(invertY ? container.getBoundingClientRect().bottom : container.getBoundingClientRect().top)
-		);
+		const relativeX = xPosition - container.getBoundingClientRect().left;
+		const relativeY = yPosition - container.getBoundingClientRect().top;
 
 		const x = bound(0, relativeX / width, 1);
-		const y = bound(0, relativeY / height, 1);
+		const y = invertY ? 1 - bound(0, relativeY / height, 1) : bound(0, relativeY / height, 1);
 		dispatch('pick', { x, y });
 	};
 
 	const handleMouseup = () => {
-		isDragging = false;
+    if (isDragging) {
+      isDragging = false;
+    }
 	};
 
 	const handleMousedown = (e: MouseEvent) => {
