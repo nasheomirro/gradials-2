@@ -68,14 +68,14 @@
 <style>
 	.picker-thumb {
 		left: 0;
-		width: 5px;
-		height: 100%;
+		width: 6px;
+		height: 110%;
+		background-color: white;
 		position: absolute;
 		border: 2px solid black;
 		top: 50%;
 		transform: translate(-50%, -50%);
 	}
-
 	.picker {
 		position: relative;
 		width: 100%;
@@ -83,13 +83,12 @@
 	}
 
 	.picker-container {
+		@apply relative w-full h-8 border border-surface-600-300-token rounded;
 		background-image: linear-gradient(45deg, #ccca 25%, transparent 25%),
 			linear-gradient(-45deg, #ccca 25%, transparent 25%),
 			linear-gradient(45deg, transparent 75%, #ccca 75%),
 			linear-gradient(-45deg, transparent 75%, #ccca 75%);
 		background-size: 20px 20px;
 		background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-		width: 16rem;
-		height: 1.2rem;
 	}
 </style>

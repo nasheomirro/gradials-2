@@ -26,7 +26,7 @@
 	let state = spring<{ x: number; y: number }>(fixedValue, { stiffness: 0.3, damping: 0.7 });
 	let container: HTMLDivElement;
 	let isDragging = false;
-  
+
 	$: state.set(fixedValue);
 
 	const pick = (xPosition: number, yPosition: number) => {
@@ -81,18 +81,16 @@
 
 <style>
 	.picker-container {
-		position: relative;
-		width: 16rem;
-		height: 6rem;
-		z-index: 0;
+		@apply relative w-full h-28 border border-surface-600-300-token;
 	}
 
 	.picker-thumb {
 		z-index: 50;
 		left: 0;
 		top: 0;
-		width: 6px;
-		height: 6px;
+		width: 8px;
+		height: 8px;
+    background-color: white;
 		position: absolute;
 		border: 2px solid black;
 		transform: translate(-50%, -50%);

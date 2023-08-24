@@ -50,7 +50,7 @@
 
 	const handleMousemove = (e: MouseEvent) => {
 		if (isDragging) {
-      pick(e.clientX, e.clientY);
+			pick(e.clientX, e.clientY);
 		}
 	};
 
@@ -66,33 +66,33 @@
 	});
 </script>
 
-<div bind:this={container} class="container" {style}>
-	{#each gradients as gradient (gradient.id)}
-		<div
-			style={`left: ${gradient.id === currentId ? $state.x : gradient.x}%; top: ${
-				gradient.id === currentId ? $state.y : gradient.y
-			}%;`}
-			role="none"
-			class="picker-thumb"
-			on:mousedown={handleMousedown(gradient.id)}
-		/>
-	{/each}
+<div class="flex grow p-2 h-full bg-surface-200-700-token">
+	<div
+		bind:this={container}
+		class="grow h-full z-0 relative border border-surface-400-500-token"
+		{style}
+	>
+		{#each gradients as gradient (gradient.id)}
+			<div
+				style={`left: ${gradient.id === currentId ? $state.x : gradient.x}%; top: ${
+					gradient.id === currentId ? $state.y : gradient.y
+				}%;`}
+				role="none"
+				class="picker-thumb"
+				on:mousedown={handleMousedown(gradient.id)}
+			/>
+		{/each}
+	</div>
 </div>
 
 <style>
-	.container {
-		width: 80rem;
-		height: 35rem;
-		border: 1px solid black;
-		position: relative;
-	}
-
 	.picker-thumb {
 		z-index: 50;
 		left: 0;
 		top: 0;
-		width: 6px;
-		height: 6px;
+		width: 8px;
+		height: 8px;
+		background-color: white;
 		position: absolute;
 		border: 2px solid black;
 		transform: translate(-50%, -50%);

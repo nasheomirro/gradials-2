@@ -23,9 +23,13 @@
 		};
 </script>
 
-<div>
-	<ControlledInput max={255} value={rgbColor.r} on:input={handleRGB('r')}>R</ControlledInput>
-	<ControlledInput max={255} value={rgbColor.g} on:input={handleRGB('g')}>G</ControlledInput>
-	<ControlledInput max={255} value={rgbColor.b} on:input={handleRGB('b')}>B</ControlledInput>
-	<ControlledInput max={100} value={Math.round(rgbColor.a * 100)} on:input={handleRGB('a')}>A</ControlledInput>
+<div class="max-w-xs grid grid-cols-4 text-center gap-x-3 gap-y-2 mb-4">
+  <div class="font-bold text-surface-400-500-token">R</div>
+  <div class="font-bold text-surface-400-500-token">G</div>
+  <div class="font-bold text-surface-400-500-token">B</div>
+  <div class="font-bold text-surface-400-500-token">A</div>
+	<ControlledInput max={255} value={rgbColor.r} on:input={handleRGB('r')} />
+	<ControlledInput max={255} value={rgbColor.g} on:input={handleRGB('g')} />
+	<ControlledInput max={255} value={rgbColor.b} on:input={handleRGB('b')} />
+	<ControlledInput max={100} value={Math.round(rgbColor.a * 100)} on:input={handleRGB('a')} />
 </div>

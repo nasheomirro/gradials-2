@@ -28,7 +28,4 @@
 	};
 </script>
 
-<label>
-	<span>value</span>
-	<input bind:value={state} on:focus on:change={finalizeEdit} />
-</label>
+<input class="input rounded-lg" bind:value={state} on:focus on:change={finalizeEdit} />

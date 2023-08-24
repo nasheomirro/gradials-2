@@ -23,7 +23,4 @@
 	};
 </script>
 
-<label>
-	<span>stop</span>
-	<input bind:value={state} type="number" on:focus on:change={finalizeEdit} />
-</label>
+<input class="input rounded-lg" bind:value={state} type="number" on:focus on:change={finalizeEdit} />

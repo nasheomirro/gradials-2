@@ -42,7 +42,7 @@
 	const handleStopDrag = (e: MouseEvent) => {
 		if (isDragging) {
 			// prevent triggering createColor
-      e.stopPropagation();
+			e.stopPropagation();
 			isDragging = false;
 		}
 	};
@@ -95,7 +95,7 @@
 	bind:this={container}
 	on:mouseup|capture={handleCreateColor}
 	role="none"
-	class="picker"
+	class="picker mb-4"
 >
 	{#each colors as color (color.id)}
 		<div
@@ -107,17 +107,16 @@
 	{/each}
 </div>
 
-<style>
+<style lang="postcss">
 	.picker {
-		position: relative;
-		width: 16rem;
-		height: 1.2rem;
+		@apply relative w-full h-8 border border-surface-600-300-token rounded;
 	}
 
 	.picker-thumb {
 		left: 0;
-		width: 5px;
-		height: 100%;
+		width: 6px;
+		height: 110%;
+    background-color: white;
 		position: absolute;
 		border: 2px solid black;
 		top: 50%;

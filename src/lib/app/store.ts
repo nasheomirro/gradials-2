@@ -1,8 +1,6 @@
-import type { Background, Gradient } from './types';
+import type { Background } from './types';
 import { writable } from 'svelte/store';
-import { nanoid } from 'nanoid';
 import { produce, type Draft } from 'immer';
-import { colord } from 'colord';
 import { createDefaultBackground } from '$lib/utils';
 
 const createStore = () => {
@@ -65,3 +63,4 @@ const createStore = () => {
 };
 
 export const backgrounds = createStore();
+export const showPanel = writable(true);

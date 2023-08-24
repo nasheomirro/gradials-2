@@ -27,7 +27,9 @@
 	};
 </script>
 
-<label>
-	<span><slot /></span>
-	<input type="number" bind:value={state} on:input={handleInput} on:blur={() => (state = value)} />
+<label class="label flex items-center gap-2">
+  {#if $$slots.default}
+	<span class="font-bold text-surface-400-500-token"><slot /></span>
+  {/if}
+	<input class="input rounded-lg w-full text-center" type="number" bind:value={state} on:input={handleInput} on:blur={() => (state = value)} />
 </label>

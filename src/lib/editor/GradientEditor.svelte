@@ -10,6 +10,9 @@
 	import { colord, type HsvaColor, type RgbaColor } from 'colord';
 	import ColorStopEditor from './ColorStopEditor.svelte';
 	import { isRgb } from '$lib/utils';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import { twJoin } from 'tailwind-merge';
+	import TrashIcon from '$lib/icons/TrashIcon.svelte';
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
@@ -102,27 +105,25 @@
 	};
 </script>
 
-<div>
-	<div><button on:click={() => dispatch('deleteself', gradient.id)}>delete</button></div>
-	{#if currentColor}
-		<ColorStopEditor
-			{currentColor}
-			colors={gradient.colors}
-			on:change={handleUpdateColor}
-			on:create={handleCreateColor}
-			on:focus={(e) => (currentId = e.detail)}
-		/>
-		<!-- shape and position -->
-		<div>
-			<button
-				on:click={() =>
-					dispatch(
-						'change',
-						produce(gradient, (draft) => {
-							draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
-						})
-					)}>change shape</button
-			>
+<div class="p-4 variant-soft-surface rounded">
+	<div class="pb-6 border-b border-b-surface-300 space-y-2 flex flex-col">
+		<button
+			class="ml-auto btn btn-icon btn-icon-sm text-surface-400-500-token"
+			on:click={() => dispatch('deleteself', gradient.id)}
+		>
+			<TrashIcon />
+		</button>
+		<button
+			class="btn btn-sm variant-soft-surface"
+			on:click={() =>
+				dispatch(
+					'change',
+					produce(gradient, (draft) => {
+						draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
+					})
+				)}>change shape</button
+		>
+		<div class="grid grid-cols-2 gap-4">
 			<ControlledInput
 				numType="float"
 				on:input={handleUpdatePosition('x')}
@@ -136,26 +137,57 @@
 				max={100}>Y</ControlledInput
 			>
 		</div>
+	</div>
+	<div class="py-6 border-b border-b-surface-300">
+		{#if currentColor}
+			<ColorStopEditor
+				{currentColor}
+				colors={gradient.colors}
+				on:change={handleUpdateColor}
+				on:create={handleCreateColor}
+				on:focus={(e) => (currentId = e.detail)}
+			/>
+		{/if}
 
-		<!-- colors -->
-		<div>
+		<div class="flex flex-col gap-2">
 			{#each gradient.colors as color (color.id)}
-				<ColorInput
-					{color}
-					on:focus={() => (currentId = color.id)}
-					on:submit={handleUpdateColorValue(color.id)}
-				/>
-				<StopInput
-					{color}
-					on:focus={() => (currentId = color.id)}
-					on:submit={handleUpdateColorStop(color.id)}
-				/>
-				<button on:click={() => deleteColor(color.id)}>delete</button>
+				<div class="flex gap-2 items-center">
+					<button
+						on:click={() => (currentId = color.id)}
+						style={`background-color: ${colord(color.rgb).toRgbString()}`}
+						class={twJoin(
+							'w-14 border border-surface-400-500-token bg-surface-400-500-token aspect-square rounded-sm',
+							currentId === color.id && 'border-2 border-surface-700-200-token'
+						)}
+					/>
+					<ColorInput
+						{color}
+						on:focus={() => (currentId = color.id)}
+						on:submit={handleUpdateColorValue(color.id)}
+					/>
+					<div class="w-32">
+						<StopInput
+							{color}
+							on:focus={() => (currentId = color.id)}
+							on:submit={handleUpdateColorStop(color.id)}
+						/>
+					</div>
+					<div>
+						<button
+							class="btn btn-icon text-surface-400-500-token btn-icon-sm p-1.5"
+							on:click={() => deleteColor(color.id)}
+						>
+							<CloseIcon />
+						</button>
+					</div>
+				</div>
 			{/each}
 		</div>
+	</div>
 
+	{#if currentColor}
 		<!-- current color -->
-		<div>
+		<div class="pt-6">
 			<RgbaEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
 			<HsvEditor color={currentColor} on:change={handleUpdateColorValue(currentId)} />
 		</div>

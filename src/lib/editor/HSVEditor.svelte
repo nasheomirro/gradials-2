@@ -55,19 +55,21 @@
 	}).toHslString()}`;
 </script>
 
-<Picker style={huePickerStyle} value={HSVColor.h} max={360} on:pick={handleHue} />
-<Picker style={alphaPickerStyle} value={HSVColor.a} max={1} on:pick={handleAlpha} />
-<XyPicker
-	style={valueAndSaturationStyle}
-	xValue={HSVColor.s}
-	yValue={100 - HSVColor.v}
-	xMax={100}
-	yMax={100}
-	on:pick={handleValueAndSaturation}
->
-	<div class="value-background" />
-	<div class="saturation-background" />
-</XyPicker>
+<div class="flex flex-col gap-2">
+	<Picker style={huePickerStyle} value={HSVColor.h} max={360} on:pick={handleHue} />
+	<Picker style={alphaPickerStyle} value={HSVColor.a} max={1} on:pick={handleAlpha} />
+	<XyPicker
+		style={valueAndSaturationStyle}
+		xValue={HSVColor.s}
+		yValue={100 - HSVColor.v}
+		xMax={100}
+		yMax={100}
+		on:pick={handleValueAndSaturation}
+	>
+		<div class="value-background" />
+		<div class="saturation-background" />
+	</XyPicker>
+</div>
 
 <style>
 	.value-background,
