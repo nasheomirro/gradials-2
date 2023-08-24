@@ -1,16 +1,13 @@
-import type { Background } from './types';
+import type { Background, BackgroundStore } from './types';
 import { writable } from 'svelte/store';
 import { produce, type Draft } from 'immer';
 import { createDefaultBackground } from '$lib/utils';
+import { getBackgrounds, saveBackgrounds } from './storage';
 
 const createStore = () => {
-	const backgrounds = writable<{
-		current: number;
-		backgrounds: Background[];
-	}>({
-		current: 0,
-		backgrounds: [createDefaultBackground()]
-	});
+	const backgrounds = writable<BackgroundStore>(getBackgrounds());
+
+	backgrounds.subscribe((bgs) => saveBackgrounds(bgs));
 
 	const createBackground = () => {
 		const bg = createDefaultBackground();
@@ -58,7 +55,7 @@ const createStore = () => {
 		createBackground,
 		deleteBackground,
 		updateBackground,
-    updateCurrent
+		updateCurrent
 	};
 };
 

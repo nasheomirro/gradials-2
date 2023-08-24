@@ -12,6 +12,7 @@ export type Gradient = {
 	x: number;
 	y: number;
 	shape: 'circle' | 'ellipse';
+	size: 'closest-side' | 'farthest-side' | 'closest-corner' | 'farthest-corner';
 	colors: Color[];
 };
 
@@ -22,7 +23,7 @@ export type Background = {
 	gradients: Gradient[];
 };
 
-export type BackgroundHistory = {
-	depth: number;
-	states: Background[];
+export type BackgroundStore = {
+	current: number;
+	backgrounds: Background[];
 };

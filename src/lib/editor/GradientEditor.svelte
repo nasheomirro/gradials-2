@@ -13,6 +13,8 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { twJoin } from 'tailwind-merge';
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
+	import CircleIcon from '$lib/icons/CircleIcon.svelte';
+	import EllipseIcon from '$lib/icons/EllipseIcon.svelte';
 
 	const dispatch = createEventDispatcher<{
 		change: Gradient;
@@ -105,24 +107,45 @@
 	};
 </script>
 
-<div class="p-4 variant-soft-surface rounded">
+<div class="p-4 bg-surface-200-700-token rounded border border-surface-400">
 	<div class="pb-6 border-b border-b-surface-300 space-y-2 flex flex-col">
 		<button
-			class="ml-auto btn btn-icon btn-icon-sm text-surface-400-500-token"
+			class="ml-auto p-0.5 btn btn-icon btn-icon-sm text-surface-400-500-token"
 			on:click={() => dispatch('deleteself', gradient.id)}
 		>
 			<TrashIcon />
 		</button>
-		<button
-			class="btn btn-sm variant-soft-surface"
-			on:click={() =>
-				dispatch(
-					'change',
-					produce(gradient, (draft) => {
-						draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
-					})
-				)}>change shape</button
-		>
+
+		<div class="flex gap-2 items-center">
+			<select
+				value={gradient.size}
+				on:change={(e) =>
+					dispatch(
+						'change',
+						produce(gradient, (draft) => {
+							// @ts-expect-error
+							draft.size = e.currentTarget.value;
+						})
+					)}
+				class="select text-sm variant-soft-surface max-w-[12rem]"
+			>
+				<option value="closest-side">closest-side</option>
+				<option value="farthest-side">farthest-side</option>
+				<option value="closest-corner">closest-corner</option>
+				<option value="farthest-corner">farthest-corner</option>
+			</select>
+			<button
+				class="btn btn-sm variant-soft-surface"
+				on:click={() =>
+					dispatch(
+						'change',
+						produce(gradient, (draft) => {
+							draft.shape = draft.shape === 'circle' ? 'ellipse' : 'circle';
+						})
+					)}>{gradient.shape}</button
+			>
+		</div>
+
 		<div class="grid grid-cols-2 gap-4">
 			<ControlledInput
 				numType="float"

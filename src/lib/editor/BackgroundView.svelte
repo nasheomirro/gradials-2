@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Gradient } from '$lib/app/types';
-	import { bound, getBackgroundViewString, toFixed } from '$lib/utils';
+	import { bound, toFixed } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
 
@@ -8,6 +8,7 @@
 		pick: { x: number; y: number; id: string };
 	}>();
 	export let gradients: Gradient[];
+  export let style: string;
 
 	const state = spring({ x: 0, y: 0 }, { damping: 0.7, stiffness: 0.3 });
 	let container: HTMLDivElement;
@@ -54,8 +55,6 @@
 		}
 	};
 
-	$: style = getBackgroundViewString(gradients);
-
 	onMount(() => {
 		window.addEventListener('mousemove', handleMousemove);
 		window.addEventListener('mouseup', handleMouseup);
@@ -66,10 +65,10 @@
 	});
 </script>
 
-<div class="flex grow p-2 h-full bg-surface-200-700-token">
+<div class="flex grow p-2 h-full">
 	<div
 		bind:this={container}
-		class="grow h-full z-0 relative border border-surface-400-500-token"
+		class="grow h-full z-0 relative border border-surface-400-500-token rounded"
 		{style}
 	>
 		{#each gradients as gradient (gradient.id)}

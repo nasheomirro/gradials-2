@@ -18,6 +18,7 @@
 	>
 		<select
 			class="select w-full max-w-sm"
+      value={$backgrounds.current}
 			disabled={!$backgrounds.backgrounds.length}
 			on:change={(e) => backgrounds.updateCurrent(Number(e.currentTarget.value))}
 		>

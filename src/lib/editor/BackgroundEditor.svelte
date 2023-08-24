@@ -2,11 +2,12 @@
 	import { twJoin } from 'tailwind-merge';
 	import { backgrounds, showPanel } from '$lib/app/store';
 	import type { Background } from '$lib/app/types';
-	import { createDefaultGradient } from '$lib/utils';
+	import { createDefaultGradient, getBackgroundViewString } from '$lib/utils';
 	import BackgroundView from './BackgroundView.svelte';
 	import GradientEditor from './GradientEditor.svelte';
 
 	export let background: Background;
+	$: backgroundString = getBackgroundViewString(background.gradients);
 </script>
 
 <div class="relative overflow-hidden grow lg:flex">
@@ -64,16 +65,30 @@
 		</ul>
 	</div>
 
-	<BackgroundView
-		gradients={background.gradients}
-		on:pick={(e) => {
-			backgrounds.updateBackground(background.id, (draft) => {
-				let i = draft.gradients.findIndex((gradient) => gradient.id === e.detail.id);
-				if (i !== -1) {
-					draft.gradients[i].x = e.detail.x;
-					draft.gradients[i].y = e.detail.y;
-				}
-			});
-		}}
-	/>
+	<div class="flex flex-col grow h-full bg-surface-200-700-token overflow-scroll">
+		<BackgroundView
+			style={backgroundString}
+			gradients={background.gradients}
+			on:pick={(e) => {
+				backgrounds.updateBackground(background.id, (draft) => {
+					let i = draft.gradients.findIndex((gradient) => gradient.id === e.detail.id);
+					if (i !== -1) {
+						draft.gradients[i].x = e.detail.x;
+						draft.gradients[i].y = e.detail.y;
+					}
+				});
+			}}
+		/>
+		<div class="relative">
+			<div class="p-4 h-24 font-mono overflow-scroll bg-surface-800 text-white">
+				{backgroundString}
+			</div>
+			<div class="absolute bottom-4 right-4">
+				<button
+					on:click={() => navigator.clipboard.writeText(backgroundString)}
+					class="btn btn-sm variant-filled-primary">copy</button
+				>
+			</div>
+		</div>
+	</div>
 </div>

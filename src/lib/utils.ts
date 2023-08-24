@@ -30,8 +30,9 @@ export const createDefaultGradient = (): Gradient => {
 		],
 		id: nanoid(6),
 		shape: 'ellipse',
-		x: 0,
-		y: 0
+		size: 'farthest-corner',
+		x: 50,
+		y: 50
 	};
 };
 
@@ -86,7 +87,7 @@ export const getBackgroundViewString = (gradients: Gradient[]) => {
 				})
 				.join(',');
 
-			return `radial-gradient(${gradient.shape} at ${gradient.x}% ${gradient.y}%, ${colorsString})`;
+			return `radial-gradient(${gradient.shape} ${gradient.size} at ${gradient.x}% ${gradient.y}%, ${colorsString})`;
 		})
 		.join(',');
 	return 'background: ' + bgString + ';';
