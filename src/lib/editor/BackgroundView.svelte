@@ -66,7 +66,7 @@
 	});
 </script>
 
-<div class="flex grow p-2 h-full">
+<div class="p-2 h-full">
 	<div
 		bind:this={container}
 		class="grow h-full z-0 relative border border-surface-400-500-token rounded"

@@ -11,7 +11,7 @@ export const getBackgrounds = (): BackgroundStore => {
 	return { current: 0, backgrounds: [createDefaultBackground()] };
 };
 
-const BOUNCE_TIME_MS = 2000;
+const BOUNCE_TIME_MS = 1000;
 let timeoutId: number;
 
 export const saveBackgrounds = (backgrounds: BackgroundStore) => {

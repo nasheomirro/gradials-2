@@ -2,12 +2,14 @@
 	import { colord, type AnyColor, type RgbaColor } from 'colord';
 	import type { Color } from '$lib/app/types';
 	import { createEventDispatcher } from 'svelte';
+	import type { PartialExcept } from '$lib/utils';
 
 	const dispatch = createEventDispatcher<{
 		submit: RgbaColor;
 	}>();
 
-	export let color: Color;
+  export let id: string | undefined = undefined;
+	export let color: PartialExcept<Color, 'rgb'>;
 	let state: string;
 
 	// this is needed, it hides the connection betwen state and color value.
@@ -28,4 +30,4 @@
 	};
 </script>
 
-<input class="input rounded-lg" bind:value={state} on:focus on:change={finalizeEdit} />
+<input {id} class="input rounded-lg" bind:value={state} on:focus on:change={finalizeEdit} />

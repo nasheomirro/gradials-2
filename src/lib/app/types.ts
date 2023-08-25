@@ -18,8 +18,8 @@ export type Gradient = {
 
 export type Background = {
 	name: string;
+  bgColor: string;
 	id: string;
-	openedAt: Date;
 	gradients: Gradient[];
 };
 

@@ -13,12 +13,13 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { twJoin } from 'tailwind-merge';
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
-	import CircleIcon from '$lib/icons/CircleIcon.svelte';
-	import EllipseIcon from '$lib/icons/EllipseIcon.svelte';
+	import ArrowupIcon from '$lib/icons/ArrowupIcon.svelte';
+	import ArrowdownIcon from '$lib/icons/ArrowdownIcon.svelte';
 
 	const dispatch = createEventDispatcher<{
+		move: 'up' | 'down';
 		change: Gradient;
-		deleteself: string;
+		deleteself: null;
 	}>();
 
 	export let gradient: Gradient;
@@ -109,12 +110,26 @@
 
 <div class="p-4 bg-surface-200-700-token rounded border border-surface-400">
 	<div class="pb-6 border-b border-b-surface-300 space-y-2 flex flex-col">
-		<button
-			class="ml-auto p-0.5 btn btn-icon btn-icon-sm text-surface-400-500-token"
-			on:click={() => dispatch('deleteself', gradient.id)}
-		>
-			<TrashIcon />
-		</button>
+		<div class="flex gap-2 items-center">
+			<button
+				class="p-0.5 btn btn-icon btn-icon-sm text-surface-400-500-token"
+				on:click={() => dispatch('move', 'down')}
+			>
+				<ArrowupIcon />
+			</button>
+			<button
+				class="p-0.5 btn btn-icon btn-icon-sm text-surface-400-500-token"
+				on:click={() => dispatch('move', 'up')}
+			>
+				<ArrowdownIcon />
+			</button>
+			<button
+				class="ml-auto p-0.5 btn btn-icon btn-icon-sm text-surface-400-500-token"
+				on:click={() => dispatch('deleteself')}
+			>
+				<TrashIcon />
+			</button>
+		</div>
 
 		<div class="flex gap-2 items-center">
 			<select
@@ -161,6 +176,7 @@
 			>
 		</div>
 	</div>
+
 	<div class="py-6 border-b border-b-surface-300">
 		{#if currentColor}
 			<ColorStopEditor

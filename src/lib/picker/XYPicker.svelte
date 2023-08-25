@@ -95,7 +95,6 @@
 			});
 		}
 	};
-
 	onMount(() => {
 		window.addEventListener('mousemove', handleMousemove);
 		window.addEventListener('mouseup', handleMouseup);

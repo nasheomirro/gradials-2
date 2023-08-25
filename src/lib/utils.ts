@@ -2,6 +2,8 @@ import { colord, type RgbaColor } from 'colord';
 import type { Background, Color, Gradient } from './app/types';
 import { nanoid } from 'nanoid';
 
+export type PartialExcept<T, K extends keyof T> = Partial<Omit<T, K>> & Pick<T, K>;
+
 export const bound = (min: number, n: number, max: number) => {
 	return n > max ? max : n < min ? min : n;
 };
@@ -40,7 +42,7 @@ export const createDefaultBackground = (): Background => {
 	return {
 		name: 'New Background',
 		gradients: [createDefaultGradient()],
-		openedAt: new Date(),
+		bgColor: '#fff',
 		id: nanoid(6)
 	};
 };
@@ -78,7 +80,8 @@ export const getColorBetween = (stop: number, colors: Color[]): RgbaColor | unde
 	}
 };
 
-export const getBackgroundViewString = (gradients: Gradient[]) => {
+export const getBackgroundViewString = (background: Background) => {
+	const { gradients, bgColor } = background;
 	const bgString = gradients
 		.map((gradient) => {
 			let colorsString = gradient.colors
@@ -90,5 +93,5 @@ export const getBackgroundViewString = (gradients: Gradient[]) => {
 			return `radial-gradient(${gradient.shape} ${gradient.size} at ${gradient.x}% ${gradient.y}%, ${colorsString})`;
 		})
 		.join(',');
-	return 'background: ' + bgString + ';';
+	return `background: ${bgString}, ${bgColor};`;
 };
