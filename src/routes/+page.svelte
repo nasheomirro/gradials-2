@@ -12,6 +12,10 @@
 	$: background = $backgrounds.backgrounds[$backgrounds.current];
 </script>
 
+<svelte:head>
+  <title>Radial Background Generator</title>
+</svelte:head>
+
 <div class="flex flex-col h-full">
 	<div
 		class="z-50 items-center gap-4 md:p-4 flex sticky top-0 p-2 justify-between bg-surface-100-800-token shadow"
