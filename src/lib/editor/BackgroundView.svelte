@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Gradient } from '$lib/app/types';
+	import PickerThumb from '$lib/picker/PickerThumb.svelte';
 	import { bound, toFixed } from '$lib/utils';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { spring } from 'svelte/motion';
@@ -8,7 +9,7 @@
 		pick: { x: number; y: number; id: string };
 	}>();
 	export let gradients: Gradient[];
-  export let style: string;
+	export let style: string;
 
 	const state = spring({ x: 0, y: 0 }, { damping: 0.7, stiffness: 0.3 });
 	let container: HTMLDivElement;
@@ -72,28 +73,13 @@
 		{style}
 	>
 		{#each gradients as gradient (gradient.id)}
-			<div
+			<PickerThumb
+        type="square"
 				style={`left: ${gradient.id === currentId ? $state.x : gradient.x}%; top: ${
 					gradient.id === currentId ? $state.y : gradient.y
 				}%;`}
-				role="none"
-				class="picker-thumb"
 				on:mousedown={handleMousedown(gradient.id)}
 			/>
 		{/each}
 	</div>
 </div>
-
-<style>
-	.picker-thumb {
-		z-index: 50;
-		left: 0;
-		top: 0;
-		width: 8px;
-		height: 8px;
-		background-color: white;
-		position: absolute;
-		border: 2px solid black;
-		transform: translate(-50%, -50%);
-	}
-</style>

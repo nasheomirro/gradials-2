@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Color } from '$lib/app/types';
+	import PickerThumb from '$lib/picker/PickerThumb.svelte';
 	import { bound, getColorBetween } from '$lib/utils';
 	import { colord } from 'colord';
 	import { nanoid } from 'nanoid';
@@ -21,6 +22,7 @@
 	let container: HTMLDivElement;
 	let isDragging: boolean;
 	let prevColorId = currentColor.id;
+	let touchId: number | null = null;
 
 	const update = (color: Color) => {
 		state.set(color.stop, { hard: prevColorId !== color.id });
@@ -39,26 +41,6 @@
 		dispatch('change', { ...currentColor, stop: getStopValue(position) });
 	};
 
-	const handleStopDrag = (e: MouseEvent) => {
-		if (isDragging) {
-			// prevent triggering createColor
-			e.stopPropagation();
-			isDragging = false;
-		}
-	};
-
-	const handleStartDrag = (id: string) => (e: MouseEvent) => {
-		// prevent selecting text
-		e.preventDefault();
-		isDragging = true;
-		dispatch('focus', id);
-	};
-
-	const handleDragging = (e: MouseEvent) => {
-		if (!isDragging) return;
-		pick(e.clientX);
-	};
-
 	const handleCreateColor = (e: MouseEvent) => {
 		const stop = getStopValue(e.clientX);
 		const rgb = getColorBetween(stop, colors);
@@ -74,12 +56,72 @@
 		}
 	};
 
+	const handleMouseup = (e: MouseEvent) => {
+		if (isDragging) {
+			// prevent triggering createColor
+			e.stopPropagation();
+			isDragging = false;
+		}
+	};
+
+	const handleMousedown = (id: string) => (e: MouseEvent) => {
+		// prevent selecting text
+		e.preventDefault();
+		isDragging = true;
+		dispatch('focus', id);
+	};
+
+	const handleMousemove = (e: MouseEvent) => {
+		if (isDragging) {
+			pick(e.clientX);
+		}
+	};
+
+	const handleTouchend = (e: TouchEvent) => {
+		if (isDragging) {
+			const touches = Array.from(e.changedTouches);
+			touches.forEach((touch) => {
+				if (touch.identifier === touchId) {
+					touchId = null;
+					isDragging = false;
+				}
+			});
+		}
+	};
+
+	const handleTouchstart = (id: string) => (e: TouchEvent) => {
+		const touches = Array.from(e.targetTouches);
+		// touch must start on element, uses one finger, and cancelable
+		if (touches.length === 0 || touches.length >= 2 || !e.cancelable) return;
+
+		e.preventDefault();
+		isDragging = true;
+		const touch = touches[0];
+		touchId = touch.identifier;
+		dispatch('focus', id);
+	};
+
+	const handleTouchmove = (e: TouchEvent) => {
+		if (isDragging) {
+			const touches = Array.from(e.changedTouches);
+			touches.forEach((touch) => {
+				if (touch.identifier === touchId) {
+					pick(touch.clientX);
+				}
+			});
+		}
+	};
+
 	onMount(() => {
-		window.addEventListener('mousemove', handleDragging);
-		window.addEventListener('mouseup', handleStopDrag, { capture: true });
+		window.addEventListener('mousemove', handleMousemove);
+		window.addEventListener('mouseup', handleMouseup, { capture: true });
+    window.addEventListener('touchmove', handleTouchmove);
+		window.addEventListener('touchend', handleTouchend);
 		return () => {
-			window.removeEventListener('mousemove', handleDragging);
-			window.removeEventListener('mouseup', handleStopDrag, { capture: true });
+			window.removeEventListener('mousemove', handleMousemove);
+			window.removeEventListener('mouseup', handleMouseup, { capture: true });
+      window.removeEventListener('touchmove', handleTouchmove);
+			window.removeEventListener('touchend', handleTouchend);
 		};
 	});
 
@@ -95,31 +137,14 @@
 	bind:this={container}
 	on:mouseup|capture={handleCreateColor}
 	role="none"
-	class="picker mb-4"
+	class="relative w-full h-8 border border-surface-600-300-token rounded mb-4"
 >
 	{#each colors as color (color.id)}
-		<div
+		<PickerThumb
+			type="long"
 			style={`left: ${color.id === currentColor.id ? $state : color.stop}%;`}
-			class="picker-thumb"
-			role="none"
-			on:mousedown={handleStartDrag(color.id)}
+			on:mousedown={handleMousedown(color.id)}
+      on:touchstart={handleTouchstart(color.id)}
 		/>
 	{/each}
 </div>
-
-<style lang="postcss">
-	.picker {
-		@apply relative w-full h-8 border border-surface-600-300-token rounded;
-	}
-
-	.picker-thumb {
-		left: 0;
-		width: 6px;
-		height: 110%;
-    background-color: white;
-		position: absolute;
-		border: 2px solid black;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-</style>

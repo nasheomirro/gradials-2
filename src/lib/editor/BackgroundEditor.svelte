@@ -13,7 +13,7 @@
 <div class="relative overflow-hidden grow lg:flex">
 	<div
 		class={twJoin(
-			'p-4 blg:absolute z-10 bg-surface-100-800-token h-full border-r border-surface-400-500-token overflow-scroll top-0 left-0 w-full sm:max-w-md transition-transform',
+			'p-4 blg:absolute z-10 bg-surface-100-800-token h-full border-r border-surface-400-500-token overflow-y-auto top-0 left-0 w-full sm:max-w-md transition-transform',
 			$showPanel ? 'blg:translate-x-0' : 'blg:-translate-x-full'
 		)}
 	>
@@ -65,7 +65,7 @@
 		</ul>
 	</div>
 
-	<div class="flex flex-col grow h-full bg-surface-200-700-token overflow-scroll">
+	<div class="flex flex-col grow h-full bg-surface-200-700-token">
 		<BackgroundView
 			style={backgroundString}
 			gradients={background.gradients}
@@ -80,7 +80,7 @@
 			}}
 		/>
 		<div class="relative">
-			<div class="p-4 h-24 font-mono overflow-scroll bg-surface-800 text-white">
+			<div class="p-4 h-24 font-mono overflow-y-auto bg-surface-800 text-white">
 				{backgroundString}
 			</div>
 			<div class="absolute bottom-4 right-4">
